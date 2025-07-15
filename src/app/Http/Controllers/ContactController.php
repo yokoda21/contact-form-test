@@ -40,13 +40,13 @@ class ContactController extends Controller
             $query->whereDate('created_at', $request->input('date'));
         }
 
-        $contacts = $query->paginate(7)->appends($request->all());
+        $contacts = $query->with('category')->paginate(7)->appends($request->all());
 
         return view('admin.index', compact('contacts'));
     }
     public function show($id)
     {
-        $contact = Contact::findOrFail($id);
+        $contact = Contact::with('category')->findOrFail($id);
         return response()->json($contact);
     }
     //お問い合わせ入力画面
@@ -90,7 +90,7 @@ class ContactController extends Controller
         \App\Models\Contact::create($request->all());
 
         // サンクスページへ
-        return view('contacts.thanks');
+        return redirect()->route('contacts.thanks');
     }
 
 

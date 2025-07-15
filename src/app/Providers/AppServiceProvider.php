@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
+
 
 //ログアウト機能
 use Laravel\Fortify\Contracts\LogoutResponse;
@@ -28,5 +30,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->singleton(LogoutResponse::class, CustomLogoutResponse::class);
+        Paginator::useBootstrap();
     }
 }

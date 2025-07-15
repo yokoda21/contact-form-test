@@ -1,2 +1,10 @@
 docker/mysql/data/*
 !.gitkeep
+docker/mysql/data/*
+!.gitkeep
+
+/vendor
+/node_modules
+/.env
+/storage/*
+!/storage/app/public

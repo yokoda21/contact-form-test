@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container">
-    <h1 class="text-center">FashionablyLate</h1>
-    <h2 class="text-center">Confirm</h2>
+@section('page-title')
+<div class="page-title">Confirm</div>
+@endsection
 
-    <table>
+@section('content')
+<div class="confirm-box">
+    <table class="confirm-table">
         <tr>
             <th>お名前</th>
             <td>{{ $inputs['last_name'] ?? '' }}　{{ $inputs['first_name'] ?? '' }}</td>
@@ -32,30 +33,27 @@
         </tr>
         <tr>
             <th>お問い合わせの種類</th>
-            <td>{{ $categoryName }}</td>
+            <td>{{ $categoryName ?? '' }}</td>
         </tr>
         <tr>
             <th>お問い合わせ内容</th>
-            <td>{!! nl2br(e($inputs['content'] ?? '')) !!}</td>
+            <td style="white-space: pre-line;">{{ $inputs['content'] ?? '' }}</td>
         </tr>
     </table>
-
-    {{-- 送信ボタンのフォーム --}}
     <form action="{{ route('contacts.store') }}" method="POST" style="display:inline;">
         @csrf
-        @foreach ($inputs as $name => $value)
-        <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+        {{-- hiddenで入力値を保持 --}}
+        @foreach($inputs as $key => $value)
+        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
         @endforeach
-        <button type="submit">送信</button>
+        <button type="submit" class="confirm-btn">送信</button>
     </form>
-
-    {{-- 修正ボタンのフォーム --}}
     <form action="{{ route('contacts.back') }}" method="POST" style="display:inline;">
         @csrf
-        @foreach ($inputs as $name => $value)
-        <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+        @foreach($inputs as $key => $value)
+        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
         @endforeach
-        <button type="submit">修正</button>
+        <button type="submit" class="confirm-btn btn-secondary">修正</button>
     </form>
 </div>
 @endsection

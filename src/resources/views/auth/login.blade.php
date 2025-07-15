@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
+@section('page-title')
+<div class="page-title">Login</div>
+@endsection
+
 @section('content')
-<div class="login-page">
-    <div class="login-title">Login</div>
+<div class="register-box">
     <form action="/login" method="POST" autocomplete="off">
         @csrf
 
