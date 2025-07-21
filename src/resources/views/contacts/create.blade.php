@@ -21,9 +21,9 @@
         @error('first_name') <div class="error">{{ $message }}</div> @enderror
 
         {{-- 性別 --}}
-        <div class="form-row">
+        <div class="form-row gender-row">
             <label>性別 ※</label>
-            <div>
+            <div class="gender-group">
                 <input type="radio" name="gender" value="男性" {{ old('gender', '男性') == '男性' ? 'checked' : '' }}> 男性
                 <input type="radio" name="gender" value="女性" {{ old('gender') == '女性' ? 'checked' : '' }}> 女性
                 <input type="radio" name="gender" value="その他" {{ old('gender') == 'その他' ? 'checked' : '' }}> その他
@@ -61,14 +61,16 @@
         {{-- お問い合わせの種類 --}}
         <div class="form-row">
             <label>お問い合わせの種類 ※</label>
-            <select name="category_id">
-                <option value="">選択してください</option>
-                @foreach($categories as $category)
-                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                    {{ $category->name }}
-                </option>
-                @endforeach
-            </select>
+            <div class="select-wrapper">
+                <select name="category_id" required>
+                    <option value="">選択してください</option>
+                    @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
         </div>
         @error('category_id') <div class="error">{{ $message }}</div> @enderror
 

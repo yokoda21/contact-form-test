@@ -19,6 +19,8 @@ use App\Http\Controllers\AdminController;
 /*トップページ（ログイン済みユーザーのみトップページ、Fortify使用し、RouteServiceProvider.phpのpublic const HOME = '/dashboard';をpublic const HOME = '/admin/contacts';→さらに'/admin/'へ変更した,確認テストのルーティング情報に合わせる）
 */
 
+
+
 // お問い合わせフォーム入力画面
 Route::get('/', [ContactController::class, 'create'])->name('contacts.create');
 // お問い合わせフォーム確認画面
@@ -37,5 +39,15 @@ Route::get('/admin/export', [AdminController::class, 'export'])->name('admin.exp
 
 //管理画面
 Route::get('/admin', [ContactController::class, 'index'])->name('admin.index');
+// お問い合わせ詳細表示
+Route::get('/admin/contacts/{id}', [ContactController::class, 'show'])->name('admin.show');
+// お問い合わせ削除
+Route::delete('/admin/contacts/{id}', [ContactController::class, 'destroy'])->name('admin.destroy');
 Route::get('/admin/{id}', [ContactController::class, 'show'])->name('admin.show');
 Route::delete('/admin/{id}', [ContactController::class, 'destroy'])->name('admin.destroy');
+
+// 管理画面はauthミドルウェアでグループ化
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    // 他の管理画面ルートもここに
+});

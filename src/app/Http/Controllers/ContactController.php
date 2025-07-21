@@ -46,7 +46,8 @@ class ContactController extends Controller
     }
     public function show($id)
     {
-        $contact = Contact::with('category')->findOrFail($id);
+        //$contact = Contact::with('category')->findOrFail($id);
+        $contact = \App\Models\Contact::with('category')->findOrFail($id);
         return response()->json($contact);
     }
     //お問い合わせ入力画面
@@ -100,5 +101,11 @@ class ContactController extends Controller
     {
         // お問い合わせ内容を保存する処理
         return view('contact.complete');
+    }
+    public function destroy($id)
+    {
+        $contact = \App\Models\Contact::findOrFail($id);
+        $contact->delete();
+        return response()->json(['message' => '削除しました']);
     }
 }

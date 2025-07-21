@@ -56,7 +56,7 @@
                     <td>{{ $contact->last_name }} {{ $contact->first_name }}</td>
                     <td>{{ $contact->gender }}</td>
                     <td>{{ $contact->email }}</td>
-                    <td>{{ $contact->category->content ?? '-' }}</td>
+                    <td>{{ $contact->category->name ?? '-' }}</td>
                     <td>
                         <button type="button" class="detail-btn" data-id="{{ $contact->id }}">詳細</button>
                     </td>
@@ -79,70 +79,82 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 必要な要素をまとめて取得
         const modal = document.getElementById('modal');
         const modalBody = document.getElementById('modal-body');
         const closeModalBtn = document.getElementById('close-modal');
-
-        // "detail-btn" というクラスを持つ全てのボタンを取得
         const detailButtons = document.querySelectorAll('.detail-btn');
 
-        // モーダルを閉じるための関数
         function closeModal() {
             modal.style.display = 'none';
         }
 
-        // 取得した全ての「詳細」ボタンに対して、クリックイベントを設定
         detailButtons.forEach(button => {
             button.addEventListener('click', function() {
-                // クリックされたボタンの data-id 属性からIDを取得
                 const contactId = this.dataset.id;
 
-                // サーバーからデータを取得
                 fetch(`/admin/contacts/${contactId}`)
                     .then(res => {
-                        if (!res.ok) {
-                            throw new Error('Network response was not ok');
-                        }
+                        if (!res.ok) throw new Error('Network response was not ok');
                         return res.json();
                     })
                     .then(data => {
-                        // CSRFトークンをmetaタグから取得
+                        console.log(data);
                         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                        // モーダルの中身を生成
                         let html = `
-                        <p><strong>お名前：</strong>${data.last_name} ${data.first_name}</p>
-                        <p><strong>性別：</strong>${data.gender}</p>
-                        <p><strong>メールアドレス：</strong>${data.email}</p>
-                        <p><strong>電話番号：</strong>${data.tel ?? ''}</p>
-                        <p><strong>住所：</strong>${data.address ?? ''}</p>
-                        <p><strong>建物名：</strong>${data.building ?? ''}</p>
-                        <p><strong>お問い合わせの種類：</strong>${data.category ? data.category.content : '-'}</p>
-                        <p><strong>お問い合わせ内容：</strong>${data.detail ?? data.content ?? ''}</p>
-                        <hr>
-                        <form method="POST" action="/admin/contacts/${data.id}" onsubmit="return confirm('本当に削除しますか？');">
-                            <input type="hidden" name="_token" value="${csrfToken}">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="delete-btn">削除</button>
-                        </form>
-                    `;
+    <table class="modal-detail-table">
+      <tr><th>お名前</th><td>${data.last_name}　${data.first_name}</td></tr>
+      <tr><th>性別</th><td>${data.gender}</td></tr>
+      <tr><th>メールアドレス</th><td>${data.email}</td></tr>
+      <tr><th>電話番号</th><td>${data.tel ?? ''}</td></tr>
+      <tr><th>住所</th><td>${data.address ?? ''}</td></tr>
+      <tr><th>建物名</th><td>${data.building ?? ''}</td></tr>
+      <tr><th>お問い合わせの種類</th><td>${data.category ? data.category.name : '-'}</td></tr>
+      <tr>
+        <th>お問い合わせ内容</th>
+        <td style="white-space:pre-line;">${data.content ?? ''}</td>
+      </tr>
+    </table>
+    <div style="text-align:center; margin-top: 32px;">
+      <form method="POST" action="/admin/contacts/${data.id}" style="display:inline-block;" onsubmit="return confirm('本当に削除しますか？');">
+        <input type="hidden" name="_token" value="${csrfToken}">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit" class="delete-btn">削除</button>
+      </form>
+    </div>
+`;
 
-                        // 生成したHTMLをモーダルにセットし、表示する
+
                         modalBody.innerHTML = html;
                         modal.style.display = 'flex';
+
+                        // 削除ボタンイベント
+                        document.querySelector('.delete-btn').onclick = function() {
+                            if (confirm('本当に削除しますか？')) {
+                                fetch(`/admin/contacts/${data.id}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-CSRF-TOKEN': csrfToken,
+                                            'Accept': 'application/json'
+                                        }
+                                    })
+                                    .then(res => res.json())
+                                    .then(res => {
+                                        alert(res.message || '削除しました');
+                                        location.reload();
+                                    })
+                                    .catch(err => {
+                                        alert('削除に失敗しました');
+                                    });
+                            }
+                        };
                     })
                     .catch(error => {
-                        console.error('詳細データの取得に失敗しました:', error);
                         alert('エラーが発生しました。詳細を読み込めませんでした。');
                     });
             });
         });
 
-        // 閉じるボタン（×）にクリックイベントを設定
         closeModalBtn.addEventListener('click', closeModal);
-
-        // モーダルの背景部分をクリックした時も閉じるように設定
         modal.addEventListener('click', function(event) {
             if (event.target === modal) {
                 closeModal();
