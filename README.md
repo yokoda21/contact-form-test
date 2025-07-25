@@ -6,7 +6,7 @@
 ### Dockerビルド
 1. git clone　リンク
 git@github.com:yokoda21/contact-form-test.git
-2. docker-compose up -d build
+2. docker-compose up -d --build
 *MySQLはOSによって起動しない場合があるのでそれぞれのPCに合わせてdocker-compose.ymlファイルを編集してください。
 
 ### Laravel環境構築
